@@ -18,7 +18,6 @@ import { BittrexAPI } from './BittrexAPI';
 import { Big } from '../../lib/types';
 import { OrderPool } from '../../lib/BookBuilder';
 import { Level3Order, PriceLevelWithOrders } from '../../lib/Orderbook';
-import * as _ from 'lodash';
 const Bittrex = require('node-bittrex-api');
 
 export class BittrexFeed extends ExchangeFeed {
@@ -62,7 +61,6 @@ export class BittrexFeed extends ExchangeFeed {
                         this.log('info', `failed to subscribeExchangeDeltas to ${product} on ${this.owner}`);
                         resolve(false);
                     }
-
                     this.client.call('CoreHub', 'queryExchangeState', product).done((queryErr: Error, data: any) => {
                         if (queryErr) {
                             return reject(queryErr);
@@ -77,18 +75,7 @@ export class BittrexFeed extends ExchangeFeed {
                     });
                 });
             });
-        })).then((values) => {
-            this.log('debug', 'Subscribe Promises array: ' + JSON.stringify(values));
-            const v = _.flatten(values);
-            this.log('debug', 'v: ' + JSON.stringify(v));
-            const flag = v.reduce((acc, cur) => {
-                return acc && cur;
-            });
-            this.log('debug', `flag: ${flag}`);
-            return Promise.resolve(flag);
-        }).catch((err) => {
-            return Promise.reject(err);
-        });
+        }));
     }
 
     protected connect() {
